@@ -1,0 +1,11 @@
+[package]
+name = "rustyengine"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+miniquad = "0.3.13"
+glam = "0.21.3"
+image = "0.24.3"
