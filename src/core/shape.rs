@@ -1,5 +1,5 @@
 use super::vertex::Vertex;
-use glam::{Mat4, Vec2, Vec3};
+use glam::{Mat4, Vec3, Vec4};
 use miniquad::*;
 
 pub enum ShapeType {
@@ -9,6 +9,8 @@ pub enum ShapeType {
 
 pub struct Shape {
     pub shape_type: ShapeType,
+    // pub offset: Vec2,
+    // pub scale: Vec2,
     pipeline: Pipeline,
     bindings: Bindings,
 }
@@ -53,11 +55,7 @@ impl Shape {
         let pipeline = Pipeline::new(
             ctx,
             &[BufferLayout::default()],
-            &[
-                VertexAttribute::new("pos", VertexFormat::Float2),
-                VertexAttribute::new("offset", VertexFormat::Float2),
-                VertexAttribute::new("scale", VertexFormat::Mat4),
-            ],
+            &[VertexAttribute::new("pos", VertexFormat::Float2)],
             shader,
         );
 
@@ -73,7 +71,7 @@ impl Shape {
     pub fn new_triangle(ctx: &mut Context) -> Self {
         let vertices: [Vertex; 3] = [
             Vertex::new(-0.5, -0.5),
-            Vertex::new(0., 0.),
+            Vertex::new(0., 0.5),
             Vertex::new(0.5, -0.5),
         ];
 
@@ -97,11 +95,7 @@ impl Shape {
         let pipeline = Pipeline::new(
             ctx,
             &[BufferLayout::default()],
-            &[
-                VertexAttribute::new("pos", VertexFormat::Float2),
-                VertexAttribute::new("offset", VertexFormat::Float2),
-                VertexAttribute::new("projection", VertexFormat::Mat4),
-            ],
+            &[VertexAttribute::new("pos", VertexFormat::Float2)],
             shader,
         );
 
@@ -117,22 +111,32 @@ impl EventHandler for Shape {
     fn update(&mut self, _ctx: &mut Context) {}
 
     fn draw(&mut self, ctx: &mut Context) {
+        let (window_width, window_height) = ctx.screen_size();
+
+        let translation = Vec3::new(500.0, 500.0, 0.0);
+        let translation_matrix = Mat4::from_translation(translation);
+
+        let scale = Vec3::new(1.0, 1.0, 1.0);
+        let scale_matrix = Mat4::from_scale(scale);
+
+        let ortho_matrix =
+            Mat4::orthographic_rh_gl(0.0, window_width, 0.0, window_height, -1.0, 1.0);
+
+        let mvp = ortho_matrix * translation_matrix * scale_matrix;
+        // println!("mvp: {mvp}");
+
         ctx.begin_default_pass(Default::default());
 
         ctx.apply_pipeline(&self.pipeline);
         ctx.apply_bindings(&self.bindings);
         ctx.apply_uniforms(&shader::Uniforms {
-            offset: Vec2::new(0.0, 0.0),
-            projection: Mat4::from_scale(Vec3::new(1.0, 1.0, 1.0)),
+            offset: (0.0, 0.0),
+            mvp: mvp,
         });
 
         match &self.shape_type {
-            ShapeType::SQUARE => {
-                ctx.draw(0, 6, 1);
-            }
-            ShapeType::TRIANGLE => {
-                ctx.draw(0, 3, 1);
-            }
+            ShapeType::SQUARE => ctx.draw(0, 6, 1),
+            ShapeType::TRIANGLE => ctx.draw(0, 3, 1),
         }
 
         ctx.end_render_pass();
@@ -141,7 +145,6 @@ impl EventHandler for Shape {
 }
 
 mod shader {
-    use glam::{Mat4, Vec2};
     use miniquad::*;
 
     pub const VERTEX: &str = r#"#version 100
@@ -149,12 +152,13 @@ mod shader {
     attribute vec2 uv;
 
     uniform vec2 offset;
-    uniform mat4 projection;
+    uniform mat4 mvp;
 
     varying lowp vec2 texcoord;
 
     void main() {
-        gl_Position = vec4(pos + offset, 0, 1);
+        vec4 pos = vec4(pos + offset, 0, 1);
+        gl_Position = mvp * pos;
         texcoord = uv;
     }"#;
 
@@ -173,7 +177,7 @@ mod shader {
             uniforms: UniformBlockLayout {
                 uniforms: vec![
                     UniformDesc::new("offset", UniformType::Float2),
-                    UniformDesc::new("projection", UniformType::Mat4),
+                    UniformDesc::new("mvp", UniformType::Mat4),
                 ],
             },
         }
@@ -181,7 +185,7 @@ mod shader {
 
     #[repr(C)]
     pub struct Uniforms {
-        pub offset: Vec2,
-        pub projection: Mat4,
+        pub offset: (f32, f32),
+        pub mvp: glam::Mat4,
     }
 }

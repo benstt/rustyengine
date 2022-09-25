@@ -1,4 +1,4 @@
-use crate::core::shape::{Shape, ShapeType};
+use crate::core::shape::Shape;
 use miniquad::*;
 
 pub struct Game {
@@ -16,8 +16,8 @@ impl EventHandler for Game {
 
     fn char_event(&mut self, ctx: &mut Context, character: char, _keymods: KeyMods, _repeat: bool) {
         match character {
-            'z' => ctx.set_fullscreen(true),
-            'x' => ctx.set_fullscreen(false),
+            'z' => ctx.show_mouse(true),
+            'x' => ctx.show_mouse(false),
             _ => (),
         }
     }
@@ -26,7 +26,7 @@ impl EventHandler for Game {
 impl Game {
     pub fn new(ctx: &mut Context) -> Self {
         Self {
-            shape: Shape::new(ctx, ShapeType::SQUARE),
+            shape: Shape::new_square(ctx),
         }
     }
 }
