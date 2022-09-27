@@ -1,17 +1,23 @@
-use crate::core::shape::Shape;
+use crate::core::shape::{Shape, ShapeParams};
+use glam::Vec2;
 use miniquad::*;
 
+#[repr(C)]
 pub struct Game {
     pub shape: Shape,
 }
 
 /// Core game loop.
 impl EventHandler for Game {
-    fn update(&mut self, _ctx: &mut Context) {}
+    fn update(&mut self, ctx: &mut Context) {}
 
     fn draw(&mut self, ctx: &mut Context) {
-        ctx.clear(Some((0., 0., 0., 0.)), None, None);
+        ctx.begin_default_pass(Default::default());
+
         self.shape.draw(ctx);
+
+        ctx.end_render_pass();
+        ctx.commit_frame();
     }
 
     fn char_event(&mut self, ctx: &mut Context, character: char, _keymods: KeyMods, _repeat: bool) {
@@ -25,8 +31,8 @@ impl EventHandler for Game {
 
 impl Game {
     pub fn new(ctx: &mut Context) -> Self {
-        Self {
-            shape: Shape::new_square(ctx),
+        Game {
+            shape: Shape::new_square(ctx, Vec2::new(500.0, 500.0), 16.0),
         }
     }
 }
