@@ -1,4 +1,5 @@
-use crate::core::shape::{Shape, ShapeParams};
+use crate::core::color::Color;
+use crate::core::shape::Shape;
 use glam::Vec2;
 use miniquad::*;
 
@@ -9,7 +10,7 @@ pub struct Game {
 
 /// Core game loop.
 impl EventHandler for Game {
-    fn update(&mut self, ctx: &mut Context) {}
+    fn update(&mut self, _ctx: &mut Context) {}
 
     fn draw(&mut self, ctx: &mut Context) {
         ctx.begin_default_pass(Default::default());
@@ -32,7 +33,7 @@ impl EventHandler for Game {
 impl Game {
     pub fn new(ctx: &mut Context) -> Self {
         Game {
-            shape: Shape::new_square(ctx, Vec2::new(500.0, 500.0), 16.0),
+            shape: Shape::new_square(ctx, Vec2::new(500.0, 500.0), 16.0, Color::BLUE),
         }
     }
 }

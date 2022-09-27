@@ -45,7 +45,10 @@ impl GraphicsHandler {
         let pipeline = Pipeline::new(
             ctx,
             &[BufferLayout::default()],
-            &[VertexAttribute::new("pos", VertexFormat::Float2)],
+            &[
+                VertexAttribute::new("pos", VertexFormat::Float2),
+                VertexAttribute::new("color0", VertexFormat::Float3),
+            ],
             shader,
         );
 
