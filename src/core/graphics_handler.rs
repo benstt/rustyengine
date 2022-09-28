@@ -1,13 +1,11 @@
 use super::vertex::Vertex;
 use miniquad::*;
 
-#[repr(C)]
 pub struct GraphicsHandler {
     pipeline: Pipeline,
     bindings: Bindings,
 }
 
-#[repr(C)]
 pub struct ShaderParams {
     pub vertex_shader: &'static str,
     pub fragment_shader: &'static str,
@@ -19,6 +17,7 @@ impl GraphicsHandler {
         ctx: &mut Context,
         vertices: &[Vertex],
         indices: &[u16],
+        primitive_type: PrimitiveType,
         shader_params: ShaderParams,
     ) -> Self {
         let vertex_buffer = Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
@@ -42,7 +41,7 @@ impl GraphicsHandler {
         .unwrap();
 
         // set the pipeline's parameters, as well as its shader attributes
-        let pipeline = Pipeline::new(
+        let pipeline = Pipeline::with_params(
             ctx,
             &[BufferLayout::default()],
             &[
@@ -50,6 +49,10 @@ impl GraphicsHandler {
                 VertexAttribute::new("color0", VertexFormat::Float3),
             ],
             shader,
+            PipelineParams {
+                primitive_type,
+                ..Default::default()
+            },
         );
 
         Self { pipeline, bindings }

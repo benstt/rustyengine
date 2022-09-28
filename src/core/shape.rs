@@ -1,21 +1,26 @@
-use super::color::Color;
 use super::graphics_handler::GraphicsHandler;
 use super::vertex::Vertex;
+use super::{color::Color, graphics_handler};
 use glam::{Mat4, Vec2, Vec3};
 use miniquad::*;
 
 const NUMBER_OF_SIDES_IN_CIRCLE: usize = 20;
 
 pub enum ShapeType {
-    SQUARE,
-    RECTANGLE,
-    TRIANGLE,
-    CIRCLE,
+    Square(f32),
+    SquareLines(f32),
+    Rectangle(f32, f32),
+    RectangleLines(f32, f32),
+    Triangle(f32, f32),
+    TriangleLines(f32, f32),
+    Circle(f32),
+    CircleLines(f32),
+    Line(f32, f32),
 }
 
 pub enum ShapeCenterPosition {
-    MIDDLE,
-    TOPLEFT,
+    Middle,
+    TopLeft,
 }
 
 /// Represents the shape settings that can be applied.
@@ -28,7 +33,7 @@ pub struct ShapeParams {
 impl Default for ShapeParams {
     fn default() -> Self {
         Self {
-            center: ShapeCenterPosition::TOPLEFT,
+            center: ShapeCenterPosition::TopLeft,
         }
     }
 }
@@ -43,27 +48,97 @@ pub struct Shape {
 }
 
 impl Shape {
-    pub fn new<T>(ctx: &mut Context, shape_type: ShapeType, position: Vec2, size: T) -> Self
-    where
-        // we want to either pass a f32 or a vector
-        T: Into<f32> + Into<Vec2>,
-    {
+    pub fn new(ctx: &mut Context, shape_type: ShapeType, position: Vec2, color: Color) -> Self {
+        Self::with_params(ctx, shape_type, position, color, Default::default())
+    }
+
+    pub fn with_params(
+        ctx: &mut Context,
+        shape_type: ShapeType,
+        position: Vec2,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
         match &shape_type {
-            ShapeType::SQUARE => todo!(),
-            ShapeType::RECTANGLE => todo!(),
-            ShapeType::TRIANGLE => todo!(),
-            ShapeType::CIRCLE => todo!(),
+            ShapeType::Square(size) => Self::new_square(ctx, position, *size, color, params),
+            ShapeType::SquareLines(size) => {
+                Self::new_square_lines(ctx, position, *size, color, params)
+            }
+            ShapeType::Rectangle(x, y) => {
+                let size = Vec2::new(*x, *y);
+                Self::new_rectangle(ctx, position, size, color, params)
+            }
+            ShapeType::RectangleLines(x, y) => {
+                let size = Vec2::new(*x, *y);
+                Self::new_rectangle_lines(ctx, position, size, color, params)
+            }
+            ShapeType::Triangle(x, y) => {
+                let size = Vec2::new(*x, *y);
+                Self::new_triangle(ctx, position, size, color, params)
+            }
+            ShapeType::TriangleLines(x, y) => {
+                let size = Vec2::new(*x, *y);
+                Self::new_triangle_lines(ctx, position, size, color, params)
+            }
+            ShapeType::Circle(r) => Self::new_circle(ctx, position, *r, color, params),
+            _ => unimplemented!(),
+            // ShapeType::Line(x1, y1) => {
+            //     let end = Vec2::new(*x1, *y1);
+            //     Self::new_line(ctx, position, end, color)
+            // }
         }
     }
 
+    // fn new_line(ctx: &mut Context, start: Vec2, end: Vec2, color: Color) -> Self {
+    //     let vertices: [Vertex; 2] = [Vertex::new(x0, y0, color), Vertex::new(x1, y1, color)];
+
+    //     let indices: [u16; 2] = [0, 1];
+    //     let shader_params = shader::get_shader_params();
+    //     let draw_mode = PrimitiveType::Lines; // override to not use triangles
+    //     let graphics_handler =
+    //         GraphicsHandler::new(ctx, &vertices, &indices, draw_mode, shader_params);
+
+    //     Self {
+    //         position: start,
+    //         graphics_handler,
+    //         size: Vec2::ZERO,
+    //         shape_type: ShapeType::Line(x0, y0, x1, y1),
+    //         params: Default::default(),
+    //     }
+    // }
+
     /// Creates a square with the position and size given.
-    pub fn new_square(ctx: &mut Context, position: Vec2, size: f32, color: Color) -> Self {
+    fn new_square(
+        ctx: &mut Context,
+        position: Vec2,
+        size: f32,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
         let size = Vec2::new(size, size);
-        Self::new_rectangle(ctx, position, size, color)
+        Self::new_rectangle(ctx, position, size, color, params)
+    }
+
+    /// Creates a square's contour.
+    fn new_square_lines(
+        ctx: &mut Context,
+        position: Vec2,
+        size: f32,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
+        let size = Vec2::new(size, size);
+        Self::new_rectangle_lines(ctx, position, size, color, params)
     }
 
     /// Creates a rectangle with the position and size given.
-    pub fn new_rectangle(ctx: &mut Context, position: Vec2, size: Vec2, color: Color) -> Self {
+    fn new_rectangle(
+        ctx: &mut Context,
+        position: Vec2,
+        size: Vec2,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
         let vertices: [Vertex; 4] = [
             Vertex::new(-1.0, 1.0, color),
             Vertex::new(1.0, 1.0, color),
@@ -73,39 +148,124 @@ impl Shape {
 
         let indices: [u16; 6] = [0, 1, 2, 0, 2, 3];
         let shader_params = shader::get_shader_params();
-        let graphics_handler = GraphicsHandler::new(ctx, &vertices, &indices, shader_params);
+        let draw_mode = PrimitiveType::Triangles;
+        let graphics_handler =
+            GraphicsHandler::new(ctx, &vertices, &indices, draw_mode, shader_params);
 
         Self {
             position,
             size,
             graphics_handler,
-            shape_type: ShapeType::SQUARE,
-            params: Default::default(),
+            params,
+            shape_type: ShapeType::Rectangle(size.x, size.y),
+        }
+    }
+
+    /// Creates a rectangle's contour.
+    fn new_rectangle_lines(
+        ctx: &mut Context,
+        position: Vec2,
+        size: Vec2,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
+        let vertices: [Vertex; 8] = [
+            Vertex::new(-1.0, 1.0, color),
+            Vertex::new(1.0, 1.0, color),
+            Vertex::new(1.0, 1.0, color),
+            Vertex::new(1.0, -1.0, color),
+            Vertex::new(1.0, -1.0, color),
+            Vertex::new(-1.0, -1.0, color),
+            Vertex::new(-1.0, -1.0, color),
+            Vertex::new(-1.0, 1.0, color),
+        ];
+        // TODO: make center lines transparent
+        let indices: [u16; 24] = [
+            0, 1, 4, 1, 4, 5, 1, 5, 6, 1, 2, 6, 3, 7, 2, 2, 7, 6, 0, 4, 3, 3, 4, 7,
+        ];
+        let shader_params = shader::get_shader_params();
+        let draw_mode = PrimitiveType::Lines;
+        let graphics_handler =
+            GraphicsHandler::new(ctx, &vertices, &indices, draw_mode, shader_params);
+
+        Self {
+            position,
+            size,
+            graphics_handler,
+            params,
+            shape_type: ShapeType::RectangleLines(size.x, size.y),
         }
     }
 
     /// Creates a triangle with the position and size given.  
-    pub fn new_triangle(ctx: &mut Context, position: Vec2, size: Vec2, color: Color) -> Self {
+    fn new_triangle(
+        ctx: &mut Context,
+        position: Vec2,
+        size: Vec2,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
         let vertices: [Vertex; 3] = [
             Vertex::new(-1.0, -1.0, color),
-            Vertex::new(0., 1.0, color),
+            Vertex::new(0.0, 1.0, color),
             Vertex::new(1.0, -1.0, color),
         ];
         let indices: [u16; 3] = [0, 1, 2];
         let shader_params = shader::get_shader_params();
-        let graphics_handler = GraphicsHandler::new(ctx, &vertices, &indices, shader_params);
+        let draw_mode = PrimitiveType::Triangles;
+        let graphics_handler =
+            GraphicsHandler::new(ctx, &vertices, &indices, draw_mode, shader_params);
 
         Self {
             position,
             size,
             graphics_handler,
-            shape_type: ShapeType::TRIANGLE,
-            params: Default::default(),
+            params,
+            shape_type: ShapeType::Triangle(size.x, size.y),
+        }
+    }
+
+    /// Creates a triangle's contour.
+    fn new_triangle_lines(
+        ctx: &mut Context,
+        position: Vec2,
+        size: Vec2,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
+        let vertices: [Vertex; 6] = [
+            Vertex::new(-1.0, -1.0, color),
+            Vertex::new(0.0, 1.0, color),
+            Vertex::new(0.0, 1.0, color),
+            Vertex::new(1.0, 1.0, color),
+            Vertex::new(1.0, 1.0, color),
+            Vertex::new(-1.0, -1.0, color),
+        ];
+
+        // TODO: fix triangle lines indices
+        let indices: [u16; 12] = [0, 1, 2, 3, 4, 5, 2, 3, 1, 4, 5, 1];
+        let shader_params = shader::get_shader_params();
+        let draw_mode = PrimitiveType::Lines;
+        let graphics_handler =
+            GraphicsHandler::new(ctx, &vertices, &indices, draw_mode, shader_params);
+
+        Self {
+            position,
+            size,
+            graphics_handler,
+            params,
+            shape_type: ShapeType::TriangleLines(size.x, size.y),
         }
     }
 
     /// Creates a new circle with the given position and radius.
-    pub fn new_circle(ctx: &mut Context, position: Vec2, radius: f32, color: Color) -> Self {
+    fn new_circle(
+        ctx: &mut Context,
+        position: Vec2,
+        radius: f32,
+        color: Color,
+        params: ShapeParams,
+    ) -> Self {
         let mut vertices = Vec::<Vertex>::with_capacity(NUMBER_OF_SIDES_IN_CIRCLE + 2);
         let mut indices = Vec::<u16>::with_capacity(NUMBER_OF_SIDES_IN_CIRCLE * 3);
 
@@ -127,21 +287,17 @@ impl Shape {
 
         let size = Vec2::new(radius, radius);
         let shader_params = shader::get_shader_params();
-        let graphics_handler = GraphicsHandler::new(ctx, &vertices, &indices, shader_params);
+        let draw_mode = PrimitiveType::Triangles;
+        let graphics_handler =
+            GraphicsHandler::new(ctx, &vertices, &indices, draw_mode, shader_params);
 
         Self {
             position,
             size,
             graphics_handler,
-            shape_type: ShapeType::CIRCLE,
-            params: Default::default(),
+            shape_type: ShapeType::Circle(radius),
+            params,
         }
-    }
-
-    /// Constructs the shape with additional shape parameters.
-    pub fn with_params(mut self, params: ShapeParams) -> Self {
-        self.params = params;
-        self
     }
 }
 
@@ -174,9 +330,13 @@ impl EventHandler for Shape {
         });
 
         match &self.shape_type {
-            ShapeType::SQUARE | ShapeType::RECTANGLE => ctx.draw(0, 6, 1),
-            ShapeType::TRIANGLE => ctx.draw(0, 3, 1),
-            ShapeType::CIRCLE => ctx.draw(0, NUMBER_OF_SIDES_IN_CIRCLE as i32 * 3, 1),
+            ShapeType::Square(_) | ShapeType::Rectangle(_, _) => ctx.draw(0, 6, 1),
+            ShapeType::SquareLines(_) | ShapeType::RectangleLines(_, _) => ctx.draw(0, 24, 1),
+            ShapeType::Triangle(_, _) => ctx.draw(0, 3, 1),
+            ShapeType::TriangleLines(_, _) => ctx.draw(0, 12, 1),
+            ShapeType::Circle(_) => ctx.draw(0, NUMBER_OF_SIDES_IN_CIRCLE as i32 * 3, 1),
+            _ => unimplemented!(),
+            // ShapeType::Line(_, _, _, _) => ctx.draw(0, 2, 1),
         }
     }
 }
