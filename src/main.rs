@@ -1,3 +1,5 @@
+#[macro_use]
+extern crate log;
 use game::Game;
 
 pub mod core;
@@ -8,6 +10,10 @@ const WINDOW_WIDTH: i32 = 1024;
 const WINDOW_HEIGHT: i32 = 768;
 
 fn main() {
+    env_logger::init();
+
+    info!("Starting miniquad application");
+
     miniquad::start(
         miniquad::conf::Conf {
             window_title: WINDOW_NAME.to_string(),

@@ -1,6 +1,7 @@
 use crate::core::color::Color;
-use crate::core::shape::{Shape, ShapeParams, ShapeType};
+use crate::core::shape::{Shape, ShapeType};
 use glam::Vec2;
+use log::info;
 use miniquad::*;
 
 #[repr(C)]
@@ -34,12 +35,13 @@ impl EventHandler for Game {
 
 impl Game {
     pub fn new(ctx: &mut Context) -> Self {
+        info!("Creating the `Game` object");
         Game {
             shapes: vec![Shape::new(
                 ctx,
-                ShapeType::RectangleLines(16.0, 32.0),
+                ShapeType::Circle(8.0),
                 Vec2::new(500.0, 500.0),
-                Color::RED,
+                Color::WHITE,
             )],
         }
     }

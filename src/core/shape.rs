@@ -1,6 +1,6 @@
+use super::color::Color;
 use super::graphics_handler::GraphicsHandler;
 use super::vertex::Vertex;
-use super::{color::Color, graphics_handler};
 use glam::{Mat4, Vec2, Vec3};
 use miniquad::*;
 
@@ -24,7 +24,6 @@ pub enum ShapeCenterPosition {
 }
 
 /// Represents the shape settings that can be applied.
-#[repr(C)]
 pub struct ShapeParams {
     /// Represents the center position of the shape. Can be either at the middle or top-left.
     pub center: ShapeCenterPosition,
@@ -88,24 +87,6 @@ impl Shape {
             // }
         }
     }
-
-    // fn new_line(ctx: &mut Context, start: Vec2, end: Vec2, color: Color) -> Self {
-    //     let vertices: [Vertex; 2] = [Vertex::new(x0, y0, color), Vertex::new(x1, y1, color)];
-
-    //     let indices: [u16; 2] = [0, 1];
-    //     let shader_params = shader::get_shader_params();
-    //     let draw_mode = PrimitiveType::Lines; // override to not use triangles
-    //     let graphics_handler =
-    //         GraphicsHandler::new(ctx, &vertices, &indices, draw_mode, shader_params);
-
-    //     Self {
-    //         position: start,
-    //         graphics_handler,
-    //         size: Vec2::ZERO,
-    //         shape_type: ShapeType::Line(x0, y0, x1, y1),
-    //         params: Default::default(),
-    //     }
-    // }
 
     /// Creates a square with the position and size given.
     fn new_square(
@@ -266,18 +247,18 @@ impl Shape {
         color: Color,
         params: ShapeParams,
     ) -> Self {
+        // https://github.com/not-fl3/macroquad/blob/master/src/shapes.rs#L126
         let mut vertices = Vec::<Vertex>::with_capacity(NUMBER_OF_SIDES_IN_CIRCLE + 2);
         let mut indices = Vec::<u16>::with_capacity(NUMBER_OF_SIDES_IN_CIRCLE * 3);
 
-        let (x, y): (f32, f32) = position.into();
-        vertices.push(Vertex::new(x, y, color));
+        let (x, y): (f32, f32) = (-1.0, 1.0);
         for i in 0..NUMBER_OF_SIDES_IN_CIRCLE + 1 {
             let rx =
                 (i as f32 / NUMBER_OF_SIDES_IN_CIRCLE as f32 * std::f32::consts::PI * 2.).cos();
             let ry =
                 (i as f32 / NUMBER_OF_SIDES_IN_CIRCLE as f32 * std::f32::consts::PI * 2.).sin();
 
-            let vertex = Vertex::new(x + radius * rx, y + radius * ry, color);
+            let vertex = Vertex::new(x * rx, y * ry, color);
             vertices.push(vertex);
 
             if i != NUMBER_OF_SIDES_IN_CIRCLE {
