@@ -38,11 +38,16 @@ impl Default for ShapeParams {
     }
 }
 
+/// Represents a shape.
 #[repr(C)]
 pub struct Shape {
+    /// The shape type, having its size in it.
     pub shape_type: ShapeType,
+    /// Where the shape should be placed in screen coordinates.
     pub position: Vec2,
+    /// The size of the shape. This is the length of its sides, or the radius.
     pub size: Vec2,
+    /// The params of the shape.
     pub params: ShapeParams,
     graphics_handler: GraphicsHandler,
 }
@@ -83,10 +88,6 @@ impl Shape {
             }
             ShapeType::Circle(r) => Self::new_circle(ctx, position, *r, color, params),
             _ => unimplemented!(),
-            // ShapeType::Line(x1, y1) => {
-            //     let end = Vec2::new(*x1, *y1);
-            //     Self::new_line(ctx, position, end, color)
-            // }
         }
     }
 
@@ -319,7 +320,6 @@ impl EventHandler for Shape {
             ShapeType::TriangleLines(_, _) => ctx.draw(0, 12, 1),
             ShapeType::Circle(_) => ctx.draw(0, NUMBER_OF_SIDES_IN_CIRCLE as i32 * 3, 1),
             _ => unimplemented!(),
-            // ShapeType::Line(_, _, _, _) => ctx.draw(0, 2, 1),
         }
     }
 }

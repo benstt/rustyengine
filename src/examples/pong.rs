@@ -4,7 +4,7 @@ use miniquad::{Context, EventHandler};
 
 use crate::core::{
     color::Color,
-    input_handler::InputHandler,
+    input_handler::{InputHandler, Stick},
     shape::{Shape, ShapeType},
 };
 
@@ -44,23 +44,19 @@ impl EventHandler for Player {
     fn update(&mut self, ctx: &mut Context) {
         self.input_handler.update(ctx);
 
-        if let Some(gamepad) = self.input_handler.current_gamepad() {
-            let mut movement_dir = Vec2::ZERO;
+        let mut movement_dir = Vec2::ZERO;
 
-            let mut left_stick_y_amount: f32 = 0.0;
-            let stick_threshold = 0.5;
-            if let Some(left_stick_y_data) = gamepad.axis_data(Axis::LeftStickY) {
-                left_stick_y_amount = left_stick_y_data.value();
-                if left_stick_y_amount.abs() < stick_threshold {
-                    left_stick_y_amount = 0.0;
-                } else {
-                    left_stick_y_amount = left_stick_y_amount.signum();
-                }
-            }
+        let stick_threshold = 0.5;
+        let (_, mut left_stick_y_amount) = self.input_handler.axis_values(Stick::Left);
 
-            movement_dir.y += left_stick_y_amount * self.movement_speed;
-            self.move_y(movement_dir.y);
+        if left_stick_y_amount.abs() < stick_threshold {
+            left_stick_y_amount = 0.0;
+        } else {
+            left_stick_y_amount = left_stick_y_amount.signum();
         }
+
+        movement_dir.y += left_stick_y_amount * self.movement_speed;
+        self.move_y(movement_dir.y);
     }
 
     fn draw(&mut self, ctx: &mut Context) {
