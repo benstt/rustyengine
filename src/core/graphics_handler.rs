@@ -20,7 +20,8 @@ impl GraphicsHandler {
         primitive_type: PrimitiveType,
         shader_params: ShaderParams,
     ) -> Self {
-        info!("Creating new GraphicsHandler");
+        debug!("creating new GraphicsHandler");
+
         let vertex_buffer = Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
         let index_buffer = Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
 

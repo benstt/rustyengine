@@ -3,6 +3,7 @@ extern crate log;
 use game::Game;
 
 pub mod core;
+pub mod examples;
 pub mod game;
 
 const WINDOW_NAME: &str = "Rusty Engine";
@@ -12,7 +13,7 @@ const WINDOW_HEIGHT: i32 = 768;
 fn main() {
     env_logger::init();
 
-    info!("Starting miniquad application");
+    info!("starting miniquad application");
 
     miniquad::start(
         miniquad::conf::Conf {

@@ -6,6 +6,7 @@ use miniquad::*;
 
 const NUMBER_OF_SIDES_IN_CIRCLE: usize = 20;
 
+#[derive(Debug)]
 pub enum ShapeType {
     Square(f32),
     SquareLines(f32),
@@ -58,6 +59,7 @@ impl Shape {
         color: Color,
         params: ShapeParams,
     ) -> Self {
+        debug!("creating shape {:?} at {}", shape_type, position);
         match &shape_type {
             ShapeType::Square(size) => Self::new_square(ctx, position, *size, color, params),
             ShapeType::SquareLines(size) => {
@@ -321,6 +323,9 @@ impl EventHandler for Shape {
         }
     }
 }
+
+// TODO: add macro to print a warning when the size of a shape is negative
+// macro_rules! warn_on_negative_size {}
 
 mod shader {
     use miniquad::*;
