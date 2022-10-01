@@ -51,6 +51,7 @@ impl EventHandler for Game {
 }
 
 impl Game {
+    /// Constructs the game with all the necessary elements into it.
     pub fn new(ctx: &mut Context) -> Self {
         info!("creating the `Game` object");
         let (window_w, window_h) = ctx.screen_size();

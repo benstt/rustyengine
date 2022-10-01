@@ -6,27 +6,42 @@ use miniquad::*;
 
 const NUMBER_OF_SIDES_IN_CIRCLE: usize = 20;
 
+/// A shape type. Its `Lines` variant represent that it should be
+/// rendered with lines instead.
 #[derive(Debug)]
 pub enum ShapeType {
+    /// A square with a given size.
     Square(f32),
+    /// A square with a given size, represented by lines.
     SquareLines(f32),
+    /// A rectangle with a width and a height.
     Rectangle(f32, f32),
+    /// A rectangle with a width and a height, represented by lines.
     RectangleLines(f32, f32),
+    /// A triangle with a base width and a height.
     Triangle(f32, f32),
+    /// A triangle with a base width and a height, represented by lines.
     TriangleLines(f32, f32),
+    /// A circle with a radius.
     Circle(f32),
+    /// A circle with a radius, represented by lines.
     CircleLines(f32),
+    /// A line with an starting point and an ending point.
     Line(f32, f32),
 }
 
+/// A center position. Determines whether the center should be
+/// at the middle or at (-1.0, 1.0) vertex coordinates of the texture.
 pub enum ShapeCenterPosition {
+    /// The middle of the texture, that is, (0.0, 0.0).
     Middle,
+    /// The top-left edge of the texture, that is, (-1.0, 1.0).
     TopLeft,
 }
 
 /// Represents the shape settings that can be applied.
 pub struct ShapeParams {
-    /// Represents the center position of the shape. Can be either at the middle or top-left.
+    /// Represents the center position of the shape.
     pub center: ShapeCenterPosition,
 }
 
@@ -49,14 +64,36 @@ pub struct Shape {
     pub size: Vec2,
     /// The params of the shape.
     pub params: ShapeParams,
+    #[doc(hidden)]
     graphics_handler: GraphicsHandler,
 }
 
 impl Shape {
+    /// Constructs a new shape.
+    ///
+    /// # Example
+    /// ```rust
+    /// use glam::Vec2;
+    ///
+    /// let pos = Vec2::new(125.0, 250.0);
+    /// let size = 16.0;
+    /// let shape = Shape::new(ctx, ShapeType::Square(size), pos, Color::WHITE);
+    /// ```
     pub fn new(ctx: &mut Context, shape_type: ShapeType, position: Vec2, color: Color) -> Self {
         Self::with_params(ctx, shape_type, position, color, Default::default())
     }
 
+    /// Constructs a shape with the given params.
+    ///
+    /// # Example
+    /// ```rust
+    /// use glam::Vec2;
+    ///
+    /// let pos = Vec2::new(500.0, 500.0);
+    /// let radius = 16.0;
+    /// let params = ShapeParams { center: ShapeCenterPosition::Middle };
+    /// let shape = Shape::with_params(ctx, ShapeType::Circle(radius), pos, Color::WHITE, params);
+    /// ```
     pub fn with_params(
         ctx: &mut Context,
         shape_type: ShapeType,

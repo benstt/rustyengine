@@ -2,14 +2,18 @@ use gilrs::{Axis, ConnectedGamepadsIterator, Gamepad, GamepadId, Gilrs};
 use miniquad::{EventHandler, KeyCode, MouseButton};
 use std::collections::HashSet;
 
+/// Represents an analog stick.
 pub enum Stick {
+    /// The left analog stick.
     Left,
+    /// The right analog stick.
     Right,
 }
 
 /// Handles the input.
 /// Keeps track of the current gamepads connected as well as provides different input functionality.
 pub struct InputHandler {
+    #[doc(hidden)]
     gilrs: Gilrs,
     /// The current gamepad ID. Used to get the actual gamepad when needed.
     current_gamepad_id: Option<GamepadId>,
@@ -24,6 +28,7 @@ pub struct InputHandler {
 }
 
 impl InputHandler {
+    /// Creates a default input handler.
     pub fn new() -> Self {
         Self {
             ..Default::default()
@@ -46,6 +51,14 @@ impl InputHandler {
     }
 
     /// Gets the given stick's axis values, ranging from -1.0 to 1.0.
+    ///
+    /// # Example
+    /// ```rust
+    /// let input_handler = InputHandler::new();
+    /// let (axis_value_x, axis_value_y) = input_handler.axis_values(Stick::Left);
+    ///
+    /// println!("Pressing the left analog stick! X: {}, Y: {}", axis_value_x, axis_value_y);
+    /// ```
     pub fn axis_values(&self, stick: Stick) -> (f32, f32) {
         let (mut value_x, mut value_y) = (0.0, 0.0);
 
@@ -79,6 +92,14 @@ impl InputHandler {
 
     /// Helper to apply _little_ code after a key is released.
     /// Emphasis on _little_, as this does not allow passing function calls into `func`.
+    ///
+    /// # Example
+    /// ```rust
+    /// use miniquad::KeyCode;
+    ///
+    /// let input_handler = InputHandler::new();
+    /// input_handler.on_key_release(KeyCode::Space, || println!("Stop jump!"));
+    /// ```
     pub fn on_key_release<F>(&mut self, key: KeyCode, mut func: F)
     where
         F: FnMut(),

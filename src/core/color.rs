@@ -1,13 +1,18 @@
 use glam::Vec3;
 
+/// A color. It is represented as 3 `rgb` values, without an alpha.
 #[derive(Clone, Copy)]
 pub struct Color {
+    /// The amount of red.
     r: u8,
+    /// The amount of green.
     g: u8,
+    /// The amount of blue.
     b: u8,
 }
 
 impl Color {
+    /// Constructs a new color with the given `rgb` values.
     pub const fn new(r: u8, g: u8, b: u8) -> Self {
         Self { r, g, b }
     }

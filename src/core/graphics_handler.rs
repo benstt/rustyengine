@@ -12,12 +12,17 @@ pub struct GraphicsHandler {
 
 /// Represents settings for a shader.
 pub struct ShaderParams {
+    /// The vertex shader.
     pub vertex_shader: &'static str,
+    /// The fragment shader.
     pub fragment_shader: &'static str,
+    /// Information about the shader.
     pub meta: ShaderMeta,
 }
 
 impl GraphicsHandler {
+    /// Creates a new instance by defining a `Pipeline` with the `primitive_type` and `shader_params` in it.
+    /// Constructs a binding by creating a vertex and index buffers with the provided vertices and indices arrays.
     pub fn new(
         ctx: &mut Context,
         vertices: &[Vertex],
@@ -65,10 +70,12 @@ impl GraphicsHandler {
         Self { pipeline, bindings }
     }
 
+    /// Returns its pipeline.
     pub const fn pipeline(&self) -> &Pipeline {
         &self.pipeline
     }
 
+    /// Returns its bindings.
     pub const fn bindings(&self) -> &Bindings {
         &self.bindings
     }
