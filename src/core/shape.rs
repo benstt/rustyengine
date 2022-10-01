@@ -283,6 +283,9 @@ impl Shape {
             params,
         }
     }
+
+    // TODO: add new_circle_lines()
+    // fn new_circle_lines() {}
 }
 
 impl EventHandler for Shape {
@@ -302,7 +305,7 @@ impl EventHandler for Shape {
         let scale_matrix = Mat4::from_scale(scale);
 
         let ortho_matrix =
-            Mat4::orthographic_rh_gl(0.0, window_width, 0.0, window_height, -1.0, 1.0);
+            Mat4::orthographic_rh_gl(0.0, window_width, window_height, 0.0, -1.0, 1.0);
 
         let mvp = ortho_matrix * translation_matrix * scale_matrix;
 

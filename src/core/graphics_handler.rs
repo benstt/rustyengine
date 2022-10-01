@@ -1,11 +1,16 @@
 use super::vertex::Vertex;
 use miniquad::*;
 
+/// High level helper to handle graphics.
+/// It can generate a new texture, as well as apply shaders to it.
 pub struct GraphicsHandler {
+    /// The pipeline used to render vertex and fragment shaders.
     pipeline: Pipeline,
+    /// Binds vertex and index buffers as well as textures.
     bindings: Bindings,
 }
 
+/// Represents settings for a shader.
 pub struct ShaderParams {
     pub vertex_shader: &'static str,
     pub fragment_shader: &'static str,
@@ -60,11 +65,11 @@ impl GraphicsHandler {
         Self { pipeline, bindings }
     }
 
-    pub fn pipeline(&self) -> &Pipeline {
+    pub const fn pipeline(&self) -> &Pipeline {
         &self.pipeline
     }
 
-    pub fn bindings(&self) -> &Bindings {
+    pub const fn bindings(&self) -> &Bindings {
         &self.bindings
     }
 }
