@@ -375,29 +375,23 @@ mod shader {
     pub const VERTEX: &str = r#"#version 100
     attribute vec2 pos;
     attribute vec3 color0;
-    attribute vec2 uv;
 
     uniform vec2 offset;
     uniform mat4 mvp;
 
-    varying lowp vec2 texcoord;
     varying lowp vec4 color;
 
     void main() {
         vec4 pos = vec4(pos + offset, 0, 1);
         gl_Position = mvp * pos;
         color = vec4(color0, 1.0);
-        texcoord = uv;
     }"#;
 
     pub const FRAGMENT: &str = r#"#version 100
     varying lowp vec4 color;
-    varying lowp vec2 texcoord;
-
-    uniform sampler2D tex;
 
     void main() {
-        gl_FragColor = color * texture2D(tex, texcoord);
+        gl_FragColor = color;
     }
     "#;
 

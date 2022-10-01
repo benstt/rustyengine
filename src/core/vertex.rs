@@ -8,6 +8,8 @@ pub struct Vertex {
     pub pos: Vec2,
     /// A color, constructed by `rgb` values.
     pub color: Vec3,
+    /// The texture coordinates.
+    pub tex: Vec2,
 }
 
 impl Vertex {
@@ -16,6 +18,25 @@ impl Vertex {
         Self {
             pos: Vec2::new(x, y),
             color: color.into(),
+            ..Default::default()
+        }
+    }
+
+    pub fn with_tex(x: f32, y: f32, s: f32, t: f32) -> Self {
+        Self {
+            pos: Vec2::new(x, y),
+            tex: Vec2::new(s, t),
+            ..Default::default()
+        }
+    }
+}
+
+impl Default for Vertex {
+    fn default() -> Self {
+        Self {
+            pos: Vec2::new(0.0, 0.0),
+            color: Color::WHITE.into(),
+            tex: Vec2::new(0.0, 0.0),
         }
     }
 }

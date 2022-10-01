@@ -39,8 +39,8 @@ impl GraphicsHandler {
         let texture = Texture::from_rgba8(ctx, 4, 4, &pixels);
 
         let bindings = Bindings {
+            index_buffer,
             vertex_buffers: vec![vertex_buffer],
-            index_buffer: index_buffer,
             images: vec![texture],
         };
 
@@ -65,6 +65,55 @@ impl GraphicsHandler {
                 primitive_type,
                 ..Default::default()
             },
+        );
+
+        Self { pipeline, bindings }
+    }
+
+    pub fn from_texture(
+        ctx: &mut Context,
+        img_size: (u32, u32),
+        img_bytes: &[u8],
+        shader_params: ShaderParams,
+    ) -> Self {
+        let (img_width, img_height) = img_size;
+        let vertices: [Vertex; 4] = [
+            Vertex::with_tex(-1.0, 1.0, 0.0, 1.0),
+            Vertex::with_tex(1.0, 1.0, 1.0, 1.0),
+            Vertex::with_tex(1.0, -1.0, 1.0, 0.0),
+            Vertex::with_tex(-1.0, -1.0, 0.0, 0.0),
+        ];
+        let indices: [u16; 6] = [0, 1, 2, 0, 2, 3];
+
+        let vertex_buffer = Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
+        let index_buffer = Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
+        let texture = Texture::from_rgba8(ctx, img_width as u16, img_height as u16, &img_bytes);
+        texture.set_filter(ctx, FilterMode::Nearest);
+
+        let bindings = Bindings {
+            index_buffer,
+            vertex_buffers: vec![vertex_buffer],
+            images: vec![texture],
+        };
+
+        let shader = Shader::new(
+            ctx,
+            shader_params.vertex_shader,
+            shader_params.fragment_shader,
+            shader_params.meta,
+        )
+        .unwrap();
+
+        // set the pipeline's parameters, as well as its shader attributes
+        let pipeline = Pipeline::new(
+            ctx,
+            &[BufferLayout::default()],
+            &[
+                VertexAttribute::new("pos", VertexFormat::Float2),
+                VertexAttribute::new("color0", VertexFormat::Float3),
+                VertexAttribute::new("tex0", VertexFormat::Float2),
+            ],
+            shader,
         );
 
         Self { pipeline, bindings }
