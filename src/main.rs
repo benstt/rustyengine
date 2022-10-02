@@ -8,13 +8,13 @@ pub mod examples;
 pub mod game;
 
 const WINDOW_NAME: &str = "Rusty Engine";
-const WINDOW_WIDTH: i32 = 1408;
-const WINDOW_HEIGHT: i32 = 792;
+const WINDOW_WIDTH: i32 = 1600;
+const WINDOW_HEIGHT: i32 = 900;
 
 fn main() {
     env_logger::init();
 
-    info!("starting miniquad application");
+    info!("Starting miniquad application");
 
     miniquad::start(
         miniquad::conf::Conf {

@@ -336,7 +336,6 @@ impl EventHandler for Shape {
         let translation = Vec3::new(position_x, position_y, 0.0);
         let translation_matrix = Mat4::from_translation(translation);
 
-        // TODO: Scale in respect to `ShapeCenterPosition`
         let (scale_x, scale_y): (f32, f32) = self.size.into();
         let scale = Vec3::new(scale_x, scale_y, 1.0);
         let scale_matrix = Mat4::from_scale(scale);
@@ -346,10 +345,15 @@ impl EventHandler for Shape {
 
         let mvp = ortho_matrix * translation_matrix * scale_matrix;
 
+        let (offset_x, offset_y) = match self.params.center {
+            ShapeCenterPosition::Middle => (0.0, 0.0),
+            ShapeCenterPosition::TopLeft => (1.0, 1.0),
+        };
+
         ctx.apply_pipeline(&self.graphics_handler.pipeline());
         ctx.apply_bindings(&self.graphics_handler.bindings());
         ctx.apply_uniforms(&shader::Uniforms {
-            offset: (0.0, 0.0),
+            offset: (offset_x, offset_y),
             mvp,
         });
 

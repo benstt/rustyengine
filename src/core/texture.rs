@@ -22,6 +22,7 @@ impl Texture {
     /// ```
     pub fn from_path(ctx: &mut Context, path: &Path, shader_params: ShaderParams) -> Self {
         // open the image and get its dimensions and bytes
+        info!("Trying to open an image with path {:?}", path);
         let img = ImageReader::open(path)
             .expect("Cannot open file.")
             .decode()
@@ -30,6 +31,11 @@ impl Texture {
         let img_dimensions = img.dimensions();
         let img_bytes = img.as_bytes();
 
+        info!(
+            "Allocating a texture with size of {:?} and dimensions {:?}",
+            img_bytes.len(),
+            img_dimensions
+        );
         let graphics_handler =
             GraphicsHandler::from_texture(ctx, img_dimensions, img_bytes, shader_params);
 

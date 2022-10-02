@@ -30,7 +30,7 @@ impl GraphicsHandler {
         primitive_type: PrimitiveType,
         shader_params: ShaderParams,
     ) -> Self {
-        debug!("creating new GraphicsHandler");
+        info!("Creating new GraphicsHandler");
 
         let vertex_buffer = Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
         let index_buffer = Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
@@ -76,6 +76,8 @@ impl GraphicsHandler {
         img_bytes: &[u8],
         shader_params: ShaderParams,
     ) -> Self {
+        info!("Creating new GraphicsHandler from a texture");
+
         let (img_width, img_height) = img_size;
         let vertices: [Vertex; 4] = [
             Vertex::with_tex(-1.0, 1.0, 0.0, 1.0),

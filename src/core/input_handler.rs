@@ -118,7 +118,7 @@ impl InputHandler {
                 return;
             }
 
-            debug!("detected input with ID {}", event.id);
+            debug!("Detected a new gamepad with ID {}", event.id);
             self.current_gamepad_id = Some(event.id);
         }
     }
