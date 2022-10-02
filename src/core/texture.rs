@@ -4,8 +4,11 @@ use image::GenericImageView;
 use miniquad::*;
 use std::path::Path;
 
+/// A GPU allocated texture.
 pub struct Texture {
+    /// The size of the image loaded.
     pub size: (u32, u32),
+    #[doc(hidden)]
     graphics_handler: GraphicsHandler,
 }
 
@@ -18,7 +21,8 @@ impl Texture {
     /// use std::path::Path;
     ///
     /// let path = Path::new("sprite.png");
-    /// let texture = Texture::from_path(ctx, path);
+    /// let shader_params = shader::get_shader_params(); // somewhere else
+    /// let texture = Texture::from_path(ctx, path, shader_params);
     /// ```
     pub fn from_path(ctx: &mut Context, path: &Path, shader_params: ShaderParams) -> Self {
         // open the image and get its dimensions and bytes

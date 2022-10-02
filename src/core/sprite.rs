@@ -1,4 +1,4 @@
-use crate::{WINDOW_HEIGHT, WINDOW_WIDTH};
+use crate::{VIRTUAL_RESOLUTION_X, VIRTUAL_RESOLUTION_Y, WINDOW_HEIGHT, WINDOW_WIDTH};
 
 use super::texture::Texture;
 use glam::{Mat4, Vec2, Vec3};
@@ -9,7 +9,9 @@ use std::path::Path;
 pub struct Sprite {
     /// The position where the sprite will be located.
     pub position: Vec2,
+    /// The size of the texture used.
     pub size: Vec2,
+    /// A pointer to an allocated texture.
     texture: Box<Texture>,
 }
 
@@ -65,6 +67,8 @@ impl EventHandler for Sprite {
         let translation_matrix = Mat4::from_translation(translation);
 
         let (scale_x, scale_y): (f32, f32) = self.size.into();
+        let scale_x = scale_x * (WINDOW_WIDTH / VIRTUAL_RESOLUTION_X) as f32;
+        let scale_y = scale_y * (WINDOW_HEIGHT / VIRTUAL_RESOLUTION_Y) as f32;
         // same as position
         let (scale_proportion_x, scale_proportion_y) = (
             // we divide by 2 as the center of the sprite is at the middle

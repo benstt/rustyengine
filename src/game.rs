@@ -5,6 +5,7 @@ use glam::Vec2;
 use log::info;
 use miniquad::*;
 
+/// The game. :)
 #[repr(C)]
 pub struct Game {
     pub sprite: Sprite,
@@ -18,8 +19,6 @@ impl EventHandler for Game {
 
     fn draw(&mut self, ctx: &mut Context) {
         ctx.begin_default_pass(Default::default());
-        // let (sx, sy) = ctx.screen_size();
-        // ctx.apply_viewport(0, 0, sx as i32, sy as i32);
 
         self.sprite.draw(ctx);
 
@@ -59,7 +58,7 @@ impl Game {
     pub fn new(ctx: &mut Context) -> Self {
         info!("Creating the Game instance");
         let (window_w, window_h) = ctx.screen_size();
-        let position = Vec2::new(0.0, 0.0);
+        let position = Vec2::new(window_w / 2.0, window_h / 2.0);
         let image_path = Path::new("src/add.png");
         let sprite = Sprite::new(ctx, position, image_path);
 

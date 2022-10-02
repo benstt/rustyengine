@@ -70,6 +70,8 @@ impl GraphicsHandler {
         Self { pipeline, bindings }
     }
 
+    /// Allocates a new texture into the GPU and returns the pipeline
+    /// and bindings with the shaders to render it.
     pub fn from_texture(
         ctx: &mut Context,
         img_size: (u32, u32),

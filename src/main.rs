@@ -10,11 +10,13 @@ pub mod game;
 const WINDOW_NAME: &str = "Rusty Engine";
 const WINDOW_WIDTH: i32 = 1600;
 const WINDOW_HEIGHT: i32 = 900;
+const VIRTUAL_RESOLUTION_X: i32 = 256;
+const VIRTUAL_RESOLUTION_Y: i32 = 144;
 
 fn main() {
     env_logger::init();
 
-    info!("Starting miniquad application");
+    info!("Starting the miniquad application");
 
     miniquad::start(
         miniquad::conf::Conf {

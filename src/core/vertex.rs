@@ -22,6 +22,8 @@ impl Vertex {
         }
     }
 
+    /// Creates a new vertex with the given `x` and `y` as a position
+    /// as well as texture coordinates `s` and `t`
     pub fn with_tex(x: f32, y: f32, s: f32, t: f32) -> Self {
         Self {
             pos: Vec2::new(x, y),
