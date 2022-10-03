@@ -1,4 +1,5 @@
 pub mod color;
+pub mod editor;
 pub mod graphics_handler;
 pub mod input_handler;
 pub mod shape;
