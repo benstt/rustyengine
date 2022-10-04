@@ -1,15 +1,33 @@
-use egui::*;
+use std::path::Path;
+
+use egui::{panel::Side, *};
 use egui_miniquad::EguiMq;
 use miniquad::*;
 
+use super::sprite::Sprite;
+
 pub struct Editor {
+    pub background_image: Sprite,
     egui_mq: EguiMq,
 }
 
 impl Editor {
     pub fn new(ctx: &mut miniquad::Context) -> Self {
+        let image_pos = glam::Vec2::new(0.0, 0.0);
+        let image_path = Path::new("src/content/editor-background.png");
+        let texture_params = TextureParams {
+            filter: FilterMode::Nearest,
+            wrap: TextureWrap::Repeat,
+            ..Default::default()
+        };
+        let (screen_size_x, screen_size_y) = ctx.screen_size();
+
+        let mut background_image = Sprite::with_params(ctx, image_pos, image_path, texture_params);
+        background_image.scale_to(screen_size_x, screen_size_y);
+
         Self {
             egui_mq: EguiMq::new(ctx),
+            background_image,
         }
     }
 
@@ -27,10 +45,25 @@ impl EventHandler for Editor {
     fn update(&mut self, _ctx: &mut miniquad::Context) {}
 
     fn draw(&mut self, ctx: &mut miniquad::Context) {
-        // self.new_window(ctx, "Egui Window", |ui| {
-        //     ui.heading("text");
-        //     ui.checkbox(&mut true, "Checkbox");
-        // });
+        let mut ordered_quit = false;
+
+        self.egui_mq.run(ctx, |ctx, egui_ctx| {
+            TopBottomPanel::top("top_panel").show(egui_ctx, |ui| {
+                ui.menu_button("File", |ui| {
+                    if ui.button("Quit editor").clicked() {
+                        ordered_quit = true;
+                    }
+                });
+            });
+
+            SidePanel::left("left_panel").show(egui_ctx, |ui| {
+                ui.heading("Rusty Engine");
+            });
+        });
+
+        if ordered_quit {
+            ctx.order_quit();
+        }
 
         self.egui_mq.draw(ctx);
     }
@@ -85,5 +118,9 @@ impl EventHandler for Editor {
 
     fn key_up_event(&mut self, _ctx: &mut miniquad::Context, keycode: KeyCode, keymods: KeyMods) {
         self.egui_mq.key_up_event(keycode, keymods);
+    }
+
+    fn resize_event(&mut self, _ctx: &mut GraphicsContext, width: f32, height: f32) {
+        self.background_image.scale_to(width, height);
     }
 }

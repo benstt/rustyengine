@@ -78,6 +78,25 @@ impl GraphicsHandler {
         img_bytes: &[u8],
         shader_params: ShaderParams,
     ) -> Self {
+        Self::from_texture_with_params(
+            ctx,
+            img_size,
+            img_bytes,
+            shader_params,
+            TextureParams {
+                ..Default::default()
+            },
+        )
+    }
+
+    /// Allocates a new texture into the GPU with the texture wrap mode specified.
+    pub fn from_texture_with_params(
+        ctx: &mut Context,
+        img_size: (u32, u32),
+        img_bytes: &[u8],
+        shader_params: ShaderParams,
+        texture_params: TextureParams,
+    ) -> Self {
         info!("Creating new GraphicsHandler from a texture");
 
         let (img_width, img_height) = img_size;
@@ -91,8 +110,16 @@ impl GraphicsHandler {
 
         let vertex_buffer = Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
         let index_buffer = Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
-        let texture = Texture::from_rgba8(ctx, img_width as u16, img_height as u16, &img_bytes);
-        texture.set_filter(ctx, FilterMode::Nearest);
+        let texture = Texture::new(
+            ctx,
+            TextureAccess::Static,
+            Some(img_bytes),
+            TextureParams {
+                width: img_width,
+                height: img_height,
+                ..texture_params
+            },
+        );
 
         let bindings = Bindings {
             index_buffer,

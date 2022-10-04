@@ -21,8 +21,9 @@ impl EventHandler for Game {
     fn draw(&mut self, ctx: &mut Context) {
         ctx.begin_default_pass(Default::default());
 
-        self.editor.draw(ctx);
+        self.editor.background_image.draw(ctx);
         self.sprite.draw(ctx);
+        self.editor.draw(ctx); // draw the editor on top of everything
 
         ctx.end_render_pass();
         ctx.commit_frame();
@@ -72,15 +73,18 @@ impl EventHandler for Game {
     fn mouse_button_up_event(&mut self, ctx: &mut Context, button: MouseButton, x: f32, y: f32) {
         self.editor.mouse_button_up_event(ctx, button, x, y);
     }
+
+    fn resize_event(&mut self, ctx: &mut Context, width: f32, height: f32) {
+        self.editor.resize_event(ctx, width, height);
+    }
 }
 
 impl Game {
     /// Constructs the game with all the necessary elements into it.
     pub fn new(ctx: &mut Context) -> Self {
         info!("Creating the Game instance");
-        let (window_w, window_h) = ctx.screen_size();
-        let position = Vec2::new(window_w / 2.0, window_h / 2.0);
-        let image_path = Path::new("src/add.png");
+        let position = Vec2::new(64.0, 32.0);
+        let image_path = Path::new("src/content/chest.png");
         let sprite = Sprite::new(ctx, position, image_path);
         let editor = Editor::new(ctx);
 

@@ -7,7 +7,8 @@ use std::path::Path;
 /// A GPU allocated texture.
 pub struct Texture {
     /// The size of the image loaded.
-    pub size: (u32, u32),
+    size: (u32, u32),
+    wrap_mode: TextureWrap,
     #[doc(hidden)]
     graphics_handler: GraphicsHandler,
 }
@@ -25,6 +26,24 @@ impl Texture {
     /// let texture = Texture::from_path(ctx, path, shader_params);
     /// ```
     pub fn from_path(ctx: &mut Context, path: &Path, shader_params: ShaderParams) -> Self {
+        Self::with_params(
+            ctx,
+            path,
+            shader_params,
+            TextureParams {
+                filter: FilterMode::Nearest,
+                ..Default::default()
+            },
+        )
+    }
+
+    /// Loads a texture to the GPU with the texture wrap mode specified.
+    pub fn with_params(
+        ctx: &mut Context,
+        path: &Path,
+        shader_params: ShaderParams,
+        texture_params: TextureParams,
+    ) -> Self {
         // open the image and get its dimensions and bytes
         info!("Trying to open an image with path {:?}", path);
         let img = ImageReader::open(path)
@@ -40,12 +59,19 @@ impl Texture {
             img_bytes.len(),
             img_dimensions
         );
-        let graphics_handler =
-            GraphicsHandler::from_texture(ctx, img_dimensions, img_bytes, shader_params);
+
+        let graphics_handler = GraphicsHandler::from_texture_with_params(
+            ctx,
+            img_dimensions,
+            img_bytes,
+            shader_params,
+            texture_params,
+        );
 
         Self {
             graphics_handler,
             size: img_dimensions,
+            wrap_mode: texture_params.wrap,
         }
     }
 
@@ -57,5 +83,13 @@ impl Texture {
     /// Returns the bindings used to render to the screen.
     pub const fn bindings(&self) -> &Bindings {
         self.graphics_handler.bindings()
+    }
+
+    pub const fn size(&self) -> (u32, u32) {
+        self.size
+    }
+
+    pub const fn wrap_mode(&self) -> TextureWrap {
+        self.wrap_mode
     }
 }

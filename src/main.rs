@@ -8,10 +8,13 @@ pub mod examples;
 pub mod game;
 
 const WINDOW_NAME: &str = "Rusty Engine";
-const WINDOW_WIDTH: i32 = 1600;
-const WINDOW_HEIGHT: i32 = 900;
-const VIRTUAL_RESOLUTION_X: i32 = 256;
-const VIRTUAL_RESOLUTION_Y: i32 = 144;
+
+// these have to be integer mults of each other
+// in order to have proper cell division in positions
+const WINDOW_WIDTH: i32 = 1536;
+const WINDOW_HEIGHT: i32 = 864;
+const VIRTUAL_RESOLUTION_X: i32 = 512;
+const VIRTUAL_RESOLUTION_Y: i32 = 288;
 
 fn main() {
     env_logger::init();
