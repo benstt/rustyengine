@@ -34,8 +34,8 @@ impl Color {
     pub const WHITE: Color = Self::new(255, 255, 255);
 }
 
-impl Into<Vec3> for Color {
-    fn into(self) -> Vec3 {
-        Vec3::new(self.r as f32, self.g as f32, self.b as f32)
+impl From<Color> for Vec3 {
+    fn from(color: Color) -> Self {
+        Vec3::new(color.r as f32, color.g as f32, color.b as f32)
     }
 }

@@ -350,8 +350,8 @@ impl EventHandler for Shape {
             ShapeCenterPosition::TopLeft => (1.0, 1.0),
         };
 
-        ctx.apply_pipeline(&self.graphics_handler.pipeline());
-        ctx.apply_bindings(&self.graphics_handler.bindings());
+        ctx.apply_pipeline(self.graphics_handler.pipeline());
+        ctx.apply_bindings(self.graphics_handler.bindings());
         ctx.apply_uniforms(&shader::Uniforms {
             offset: (offset_x, offset_y),
             mvp,

@@ -85,10 +85,12 @@ impl Texture {
         self.graphics_handler.bindings()
     }
 
+    /// Gets the size of the texture.
     pub const fn size(&self) -> (u32, u32) {
         self.size
     }
 
+    /// Gets the wrap mode of the texture.
     pub const fn wrap_mode(&self) -> TextureWrap {
         self.wrap_mode
     }

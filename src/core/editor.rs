@@ -1,20 +1,26 @@
 use std::path::Path;
 
-use egui::{panel::Side, *};
+use egui::*;
 use egui_miniquad::EguiMq;
 use miniquad::*;
 
 use super::sprite::Sprite;
 
+const BACKGROUND_PATH: &str = "src/content/editor-background.png";
+
+// TODO: add more documentation!
+/// A level editor.
 pub struct Editor {
+    /// The background image used.
     pub background_image: Sprite,
     egui_mq: EguiMq,
 }
 
 impl Editor {
+    /// Creates an editor with a GUI.
     pub fn new(ctx: &mut miniquad::Context) -> Self {
         let image_pos = glam::Vec2::new(0.0, 0.0);
-        let image_path = Path::new("src/content/editor-background.png");
+        let image_path = Path::new(BACKGROUND_PATH);
         let texture_params = TextureParams {
             filter: FilterMode::Nearest,
             wrap: TextureWrap::Repeat,
@@ -30,15 +36,6 @@ impl Editor {
             background_image,
         }
     }
-
-    pub fn new_window<F>(&mut self, ctx: &mut miniquad::Context, title: &str, ui: F)
-    where
-        F: FnOnce(&mut Ui),
-    {
-        self.egui_mq.run(ctx, |_ctx, egui_ctx| {
-            egui::Window::new(title).show(egui_ctx, ui);
-        })
-    }
 }
 
 impl EventHandler for Editor {
@@ -47,7 +44,7 @@ impl EventHandler for Editor {
     fn draw(&mut self, ctx: &mut miniquad::Context) {
         let mut ordered_quit = false;
 
-        self.egui_mq.run(ctx, |ctx, egui_ctx| {
+        self.egui_mq.run(ctx, |_ctx, egui_ctx| {
             TopBottomPanel::top("top_panel").show(egui_ctx, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit editor").clicked() {

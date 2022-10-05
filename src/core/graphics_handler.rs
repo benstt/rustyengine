@@ -32,8 +32,8 @@ impl GraphicsHandler {
     ) -> Self {
         info!("Creating new GraphicsHandler");
 
-        let vertex_buffer = Buffer::immutable(ctx, BufferType::VertexBuffer, &vertices);
-        let index_buffer = Buffer::immutable(ctx, BufferType::IndexBuffer, &indices);
+        let vertex_buffer = Buffer::immutable(ctx, BufferType::VertexBuffer, vertices);
+        let index_buffer = Buffer::immutable(ctx, BufferType::IndexBuffer, indices);
 
         let pixels: [u8; 4 * 4 * 4] = [0xFF; 64];
         let texture = Texture::from_rgba8(ctx, 4, 4, &pixels);
